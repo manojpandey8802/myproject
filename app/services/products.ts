@@ -2,9 +2,9 @@ import { Product } from "@/app/types/product";
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/products`, {
-      next: { revalidate: 10 },
+    // Use same-origin to avoid CORS in deployed and local environments
+    const res = await fetch(`/api/products`, {
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
