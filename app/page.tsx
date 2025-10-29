@@ -1,6 +1,7 @@
 "use client";
 
 import ProductCard from "./components/ProductCard";
+import ProductCardSkeleton from "./components/ProductCardSkeleton";
 import { getProducts } from "./services/products";
 import { useTheme } from "@/app/context/ThemeContext";
 import { useEffect, useState } from "react";
@@ -8,12 +9,16 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const { theme } = useTheme();
   const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Client-side fetch because this is a client component
     const fetchProducts = async () => {
-      const data = await getProducts();
-      setProducts(data);
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchProducts();
   }, []);
@@ -29,7 +34,15 @@ export default function Home() {
       >
         Featured Products
       </h1>
-      {products.length > 0 ? (
+      {isLoading ? (
+        <div
+          className="grid gap-6 justify-items-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl"
+        >
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <ProductCardSkeleton key={idx} />
+          ))}
+        </div>
+      ) : products.length > 0 ? (
         <div
           className="grid gap-6 justify-items-center
           grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
